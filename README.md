@@ -1,122 +1,119 @@
-## Cyber Intern Phase 1 – Threat Detection Lab
+# Cyber Intern Phase 1 – Hands-on Cybersecurity Lab
 
-## 🎯 Objective
-This repository documents the hands-on simulation of real-world cybersecurity threats and corresponding detection methods using Sysmon, Winlogbeat, Wazuh/ELK, and a Windows lab environment.
+## Overview
 
-## 🧰 Lab Setup
-- ✅ VirtualBox Installed
-- ✅ Kali Linux VM (attacker)
-- ✅ Windows 10 VM (target)
-- ✅ Sysmon Installed with SwiftOnSecurity config
-- ✅ Winlogbeat configured and logs forwarded to SIEM
-- ✅ Wazuh or ELK SIEM stack setup and working
-- ✅ GitHub repository structured for documentation
+This repository documents my journey through the **Phase 1 Cybersecurity Internship Program**, where I set up a full detection engineering lab, simulated real-world attack scenarios, collected logs, and analyzed events using modern SIEM tools.
 
+**Objective:**  
+To gain practical experience in cybersecurity threat detection by performing simulations of common attack patterns and investigating their traces using SIEM platforms.
 
 ---
 
-## 🔍 Simulated Attack Scenarios & Logs
+## Lab Setup
 
-### ✅ Hint 1: Brute Force Login
-- **Simulated**: Repeated `net use` attempts with fake credentials
-- **Event ID**: 4625 (Failed Logon)
-- **Tool**: PowerShell
-- **Logs Captured**: Windows Security, Sysmon
+### 1. Virtual Environment
 
-### ✅ Hint 2: Suspicious PowerShell Usage
-- **Simulated**: Encoded PowerShell payload (`Start-Process smoch.exe`)
-- **Event ID**: Sysmon 1, PowerShell logs
-- **Detection**: PowerShell command logging enabled
+- **Virtualization:**  
+  Installed [VirtualBox](https://www.virtualbox.org) (or VMware) to run virtual machines.
+- **VMs Used:**  
+  - **Kali Linux** (for attack simulation)  
+  - **Windows 10** (for endpoint logging/target)
 
-### ✅ Hint 3: USB Insertion (❌ Skipped)
-- **Status**: Not completed
-- **Plan**: Use virtual USB VHD simulation in the future
+### 2. Logging & SIEM Tools
 
-### ✅ Hint 4: Malware Execution Simulation
-- **Simulated**: `.bat` file executing ping
-- **Event ID**: Sysmon 1, Sysmon 3
-- **Logs**: File creation and process execution tracked
+- **Sysmon**: Installed on Windows 10 VM to record detailed system events (processes, connections, file modifications).
+- **Winlogbeat**: Configured to ship Windows event and Sysmon logs to SIEM.
+- **SIEM Options:**
+  - [Wazuh](https://documentation.wazuh.com) (recommended for beginners)
+  - ELK Stack (Elasticsearch, Logstash, Kibana)
+- **Sample SIEM features:**  
+  - Log storage and search (Elasticsearch)
+  - Visualization and dashboards (Kibana)
+  - Alerting and correlation (Wazuh/ELK)
 
-### ✅ Hint 5: Registry Modification
-- **Simulated**: Registry key added for persistence
-- **Event ID**: Sysmon 13 (Registry object modification)
-- **Key**: `HKCU:\Software\Microsoft\Windows\CurrentVersion\Run`
+### 3. Repository Structure
 
-### ✅ Hint 6: Suspicious Network Activity
-- **Simulated**: `Invoke-WebRequest` to external URL
-- **Event ID**: Sysmon 3 (Network Connection)
-- **Tool**: PowerShell
-
-### ✅ Hint 7: Fileless Attack Simulation
-- **Simulated**: In-memory PowerShell execution
-- **Logged**: ScriptBlock logging, Sysmon 1
-
-### ✅ Hint 8: Suspicious Scheduled Task
-- **Simulated**: Task created to run malicious PowerShell
-- **Event ID**: Windows 4698
-- **Logs**: Process chain + task scheduling
-
-### ✅ Hint 9: Persistence via Startup Folder
-- **Simulated**: Dropped `evil.exe` to Startup path
-- **Event ID**: Sysmon 11
-- **Outcome**: Persistence achieved on reboot
-
-### ✅ Hint 10: Privilege Escalation Attempt
-- **Simulated**: Added local admin user `attacker`
-- **Event IDs**: 4720 (User created), 4732 (Added to Admins)
+```
+cyber-intern-phase-1/
+├── logs/
+├── reports/
+├── screenshots/
+├── hints/
+└── README.md
+```
 
 ---
 
-## 📊 SIEM Integration
-- All logs forwarded to **Wazuh** or **ELK** via **Winlogbeat**
-- Validation:
-  - Confirmed event codes via Kibana/Wazuh dashboard
-  - Screenshots captured and stored in `/screenshots/`
+## Step-by-Step Program Guide
+
+### Step 1: Environment Setup
+
+- Installed virtualization software and imported Kali Linux and Windows 10 VMs.
+- Deployed SIEM (Wazuh or ELK).
+- Configured Sysmon and Winlogbeat on Windows VM.
+- Enabled Windows security event logging via Group Policy.
+- Created this GitHub repo with folders for logs, screenshots, reports, and hints.
+
+### Step 2: Simulating Security Scenarios
+
+Simulated 10 common attack scenarios to generate event logs and practice detection:
+
+| #  | Scenario                       | Tools / Techniques                                      | Key Events Logged                         |
+|----|--------------------------------|---------------------------------------------------------|-------------------------------------------|
+| 1  | Brute Force Login              | PowerShell/net use, Hydra, Burp Suite                   | Windows 4625 (Failed Logon)               |
+| 2  | Malware Execution              | .bat scripts, test malware, VirusTotal analysis         | Sysmon 1 (Process Create), 11 (File)      |
+| 3  | Data Exfiltration              | netcat, Wireshark, file transfer over non-standard port | Sysmon 3 (Network), outbound traffic      |
+| 4  | Suspicious Network Activity    | nmap, Wireshark, tcpdump                                | Sysmon 3, odd DNS queries                 |
+| 5  | Phishing Email Detection       | GoPhish, email headers, attachments                     | Email logs, attachment events             |
+| 6  | Unauthorized Access Attempt    | Failed logins, disabled accounts                        | Windows 4625/4624, geolocation            |
+| 7  | Suspicious File Download       | Invoke-WebRequest, curl, PowerShell logging             | Sysmon 1/3, file download events          |
+| 8  | Privilege Escalation Attempt   | whoami, accesschk, winPEAS                              | Admin group changes, registry changes     |
+| 9  | Lateral Movement Detection     | SMB, RDP, CrackMapExec, Impacket tools                  | Sysmon 3, Windows 4624                    |
+| 10 | Command & Control (C2) Traffic | Netcat, Empire, Cobalt Strike, beaconing traffic        | Regular outbound, Sysmon 3                |
+
+- **For each hint:**  
+  - Performed the attack/simulation.
+  - Captured screenshot(s) of configuration and SIEM output.
+  - Saved related logs and config files.
+
+### Step 3: Log Analysis
+
+- Used **Kibana/Wazuh dashboards** and Event Viewer to analyze generated logs.
+- Identified patterns for malicious activities (e.g., bursts of 4625, lateral movement, persistence).
+- Documented findings in `/reports` and `/hints`.
+
+### Step 4: Documentation
+
+- Created detailed markdown files for each scenario (e.g., `hint01_brute_force.md`) in `/hints` folder.
+- Included:
+  - Steps performed
+  - Screenshots
+  - Observed log entries and indicators
+  - SIEM alerts (if any)
+  - Analysis and lessons learned
+
+### Step 5: Submission
+
+- Committed and pushed lab artifacts (logs, screenshots, reports) to GitHub weekly.
+- Ensured at least 8 out of 10 hints were completed and documented for eligibility to Phase 2.
 
 ---
 
-## 📝 Documentation Checklist
-| Scenario                      | Done | Logs | Screenshot | Summary |
-|------------------------------|------|------|------------|---------|
-| Brute Force Login            | ✅   | ✅   | ✅         | ✅      |
-| PowerShell Abuse             | ✅   | ✅   | ✅         | ✅      |
-| USB Malware Simulation       | ❌   | ❌   | ❌         | ❌      |
-| Malware Execution            | ✅   | ✅   | ✅         | ✅      |
-| Registry Persistence         | ✅   | ✅   | ✅         | ✅      |
-| Suspicious Network Activity  | ✅   | ✅   | ✅         | ✅      |
-| Fileless Attack              | ✅   | ✅   | ✅         | ✅      |
-| Scheduled Task Abuse         | ✅   | ✅   | ✅         | ✅      |
-| Startup Folder Persistence   | ✅   | ✅   | ✅         | ✅      |
-| Privilege Escalation         | ✅   | ✅   | ✅         | ✅      |
+## Troubleshooting & Tips
+
+- Use [TryHackMe](https://tryhackme.com) or [HackTheBox](https://www.hackthebox.com) if local lab setup is not possible.
+- Refer to [MITRE ATT&CK](https://attack.mitre.org/) for tactics and detection ideas.
+- Search YouTube for walkthroughs (e.g., "hydra brute force demo").
+- If stuck:  
+  “Think like a hacker. Then, think how you’d detect it.”
 
 ---
 
-## 📦 How to Reproduce
-1. Clone this repo
-2. Review setup guide in `/reports/`
-3. Use included commands to simulate each attack
-4. Verify logs in Wazuh/Kibana
-5. Compare output with provided screenshots/logs
+## Acknowledgements
+
+- [Wazuh Documentation](https://documentation.wazuh.com)
+- [SwiftOnSecurity/sysmon-config](https://github.com/SwiftOnSecurity/sysmon-config)
+- [Elastic Stack](https://www.elastic.co/what-is/elk-stack)
+- MITRE ATT&CK Framework
 
 ---
-
-## ✅ Status
-> ✔️ 9/10 Hints completed  
-> 🕐 USB simulation pending (planned via virtual USB disk)
-
----
-
-## 📎 Resources
-- [Sysmon Config - SwiftOnSecurity](https://github.com/SwiftOnSecurity/sysmon-config)
-- [Wazuh Documentation](https://documentation.wazuh.com/)
-- [Microsoft Sysinternals Tools](https://docs.microsoft.com/en-us/sysinternals/)
-- [ELK Stack Setup](https://www.elastic.co/what-is/elk-stack)
-
----
-
-## 🧠 Notes
-> "If you're stuck, think like a hacker. Then, think how you'd detect it." — Internship Guide
-
----
-
-
